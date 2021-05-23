@@ -1,0 +1,24 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+
+<script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}" type="text/javascript"></script>
+
+<h3>Шаг 1. Отсканируй мобильным телефоном код на приглашении волонтера</h3>
+<button type="button" class="btn btn-success" onclick="start_scan_invite()">Сканировать приглашение</button>
+<div id="fst_qr"></div>
+
+<h3>Шаг 2. Найди бейдж волонтера (если не нашел - возьми анонимуса)</h3>
+<h3>Шаг 3. Отсканируй мобильным телефоном код на бейдже</h3>
+
+<button type="button" class="btn btn-success">Сканировать бейдж</button>
+
+<div id="reader">
+	
+</div>
+
+
+<script src="{{ url_for('static', filename='js/checkin.js') }}" type="text/javascript"></script>
+
+{% endblock %}
