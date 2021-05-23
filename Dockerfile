@@ -1,8 +1,8 @@
-FROM ubuntu:latest
+FROM ubuntu:bionic
 
 
 RUN apt-get -y update || true
-RUN apt-get -y install python-2.7 vim python-pip git python-dev libffi-dev libssl-dev nginx gcc
+RUN apt-get -y install python2.7 vim python-pip git python-dev libffi-dev libssl-dev nginx gcc
 
 RUN pip install --upgrade pip
 RUN pip install virtualenv

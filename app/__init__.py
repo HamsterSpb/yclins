@@ -14,12 +14,6 @@ from flask_admin.contrib.sqla import ModelView
 import random
 import string
 
-from OpenSSL import SSL
-
-
-#context = SSL.Context(SSL.PROTOCOL_TLS_SERVER)
-#context.use_privatekey_file('key.pem')
-#context.use_certificate_file('cert.pem')   
 
 app = Flask(__name__)
 app.config.from_object(Config)
