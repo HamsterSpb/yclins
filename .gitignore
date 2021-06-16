@@ -1,4 +1,6 @@
 *.pyc
 *.db
+*.pem
+.venv
 local_*
 .DS_Store
