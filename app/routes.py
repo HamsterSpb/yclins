@@ -82,8 +82,8 @@ def get_vol_list():
 
 @app.route("/load_transactions", methods=['POST'])
 def load_transactions():
+
 	dta = json.loads(request.data)
-	print dta
 	to_upd_bal = {}
 	for entry in dta:
 		ft = Feed_transaction()
@@ -93,9 +93,9 @@ def load_transactions():
 		ft.dtime = datetime.datetime.fromtimestamp(entry["timestamp"] / 1e3)
 		db.session.add(ft)
 		if entry["vol_id"] not in to_upd_bal:
-			to_upd_bal[entry["vol_id"]] = ft.amount
+			to_upd_bal[str(entry["vol_id"])] = ft.amount
 		else:
-			to_upd_bal[entry["vol_id"]] -= ft.amount
+			to_upd_bal[str(entry["vol_id"])] -= ft.amount
 
 
 	fbs = Feed_balance.query.filter(Feed_balance.volunteer_id.in_(to_upd_bal)).all()

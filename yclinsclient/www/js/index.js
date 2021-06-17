@@ -226,7 +226,7 @@ function getVolunteers() {
 
 	var req = ostt.getAll();
 	req.onsuccess = (e) => {
-		var data = []
+		var data2 = [];
 		var trs = e.target.result;
 		trs.forEach((o) => {
 			let _t = {
@@ -234,16 +234,17 @@ function getVolunteers() {
 				'amount': o.amount,
 				'timestamp': o.dtime
 			};
-			data.push(_t);
+			data2.push(_t);
 		});
 		var sendUrl = 'https://yclins.hamsterspb.xyz/load_transactions';
 		$.ajax({
 			type: 'POST',
 			url: sendUrl,
 			crossDomain: true,
-			data: data,
+			data: JSON.stringify(data2),
 			dataType: 'json',
-			success: (ev) => {
+			contentType: "application/json; charset=utf-8",
+			success: (d, ev) => {
 				ostt.clear();
 				getOnlyVols();
 			}
