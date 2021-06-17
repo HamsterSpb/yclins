@@ -33,7 +33,7 @@
         <div class="app">
             <div class="container">
                 <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-primary btn-lg">Кормить</button>
+                    <button type="button" class="btn btn-primary btn-lg" onclick="scan_qr()">Кормить</button>
                     <button type="button" class="btn btn-primary btn-lg" onclick="getVolunteers()">Загрузить список</button>
                 </div>
             </div>
@@ -41,6 +41,16 @@
 
         <!-- Paranja -->
         <div class="prj"></div>
+
+        <!-- Feed -->
+        <div class="feed">
+            <div class="feed_name feed_block">Мария Манькова (Маняша)</div>
+            <div class="feed_left feed_block">осталось 3 питания</div>
+            <div class="feed_decision feed_block">
+                <button type="button" class="btn btn-primary btn-lg" onclick="force_feed()">Все равно кормить</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="force_nofeed()">Не кормить</button>
+            </div>
+        </div>
 
         <!-- Modal -->
         <div class="modal fade" id="infomessages">

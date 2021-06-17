@@ -83,6 +83,7 @@ def get_vol_list():
 @app.route("/load_transactions", methods=['POST'])
 def load_transactions():
 	dta = json.loads(request.data)
+	print dta
 	to_upd_bal = {}
 	for entry in dta:
 		ft = Feed_transaction()
@@ -110,6 +111,7 @@ def load_transactions():
 	
 	db.session.commit()
 
+	return "{'res': 'success'}"
 
 
 @app.route('/scaff')
