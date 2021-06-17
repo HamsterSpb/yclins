@@ -242,12 +242,16 @@ function getVolunteers() {
 			url: sendUrl,
 			crossDomain: true,
 			data: JSON.stringify(data2),
-			dataType: 'json',
 			contentType: "application/json; charset=utf-8",
-			success: (d, ev) => {
+			success: (ev) => {
+				var tr = db.transaction(["transactions"], 'readwrite');
+				var ostt = tr.objectStore('transactions');
 				ostt.clear();
 				getOnlyVols();
-			}
+			},
+			failure: (ev) => {
+            	console.log(ev);
+        	}
 		});
 	}
 }
