@@ -91,6 +91,7 @@ def load_transactions():
 		ft.amount = (-1)*abs(entry["amount"])
 		ft.hwo = "sync"
 		ft.dtime = datetime.datetime.fromtimestamp(entry["timestamp"] / 1e3)
+		ft.trhash = entry["trhash"]
 		db.session.add(ft)
 		if entry["vol_id"] not in to_upd_bal:
 			to_upd_bal[str(entry["vol_id"])] = ft.amount
