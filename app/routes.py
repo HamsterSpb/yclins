@@ -1,6 +1,6 @@
 #coding=utf-8
 
-from app import app, db
+from app import app, db, gsheet
 from flask import render_template, url_for, redirect, session, request,  flash
 from app.models import Volunteer, Volunteer_type, Feed_type, Feed_transaction, Feed_balance, QR_Codes
 
@@ -13,6 +13,18 @@ import random
 @app.route('/')
 def index():
 	return "Hello world"
+
+
+@app.route('/import')
+def import_sheet():
+
+	to_import = gsheet.do_import()
+
+	depts = list(dict.fromkeys(map(lambda x: x["dept"], to_import)))
+
+	for o in to_import:
+
+	return "All ok"
 
 
 @app.route('/update_balance')
