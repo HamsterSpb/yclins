@@ -29,7 +29,10 @@ app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) f
 from app.models import Volunteer, Volunteer_type, Feed_type, Feed_transaction, Feed_balance, QR_Codes, Department, Presence, Transport_type
 
 
+from flask_admin.model.template import EndpointLinkRowAction
+
 class HomeView(AdminIndexView):
+
     @expose("/")
     def index(self):
         return self.render('admin/index.html')
@@ -49,7 +52,19 @@ class ImageBlob(fields.StringField):
 
 class VolView(ModelView):
     column_list = ('name', 'surname', 'callsign', 'email', 'phone')
-    searchable_columns = ('name', 'surname', 'callsign', 'email', 'phone')
+    column_searchable_list = ('name', 'surname', 'callsign', 'email', 'phone')
+
+    column_extra_row_actions = [
+        EndpointLinkRowAction("glyphicon glyphicon-qrcode", ".link_qr"),
+    ]
+
+    @expose("/link_qr", methods=("GET",))
+    def link_qr(self):
+        if request.args.has_key("id"):
+            vol_id = request.args.get("id")
+            return self.render('admin/link_qr.html', vol_id=vol_id)
+        else:
+            return self.render('admin')
 
     #form_columns = ('blob')
 

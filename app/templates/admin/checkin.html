@@ -5,14 +5,26 @@
 <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}" type="text/javascript"></script>
 <script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}" type="text/javascript"></script>
 
-<h3>Шаг 1. Отсканируй мобильным телефоном код на приглашении волонтера</h3>
-<button type="button" class="btn btn-success" onclick="start_scan_invite()">Сканировать приглашение</button>
+
+<h2>Для волонтера делали бейдж и бейдж нашли?</h2>
+
+<h3>Шаг 1. Найди бейдж волонтера</h3>
+<h3>Шаг 2. Отсканируй мобильным телефоном QR код на бейдже</h3>
+<button type="button" class="btn btn-success" onclick="start_scan_invite()">Сканировать бейдж</button>
 <div id="fst_qr"></div>
+<h3>Шаг 3. Отпусти волонтера с миром</h3>
 
-<h3>Шаг 2. Найди бейдж волонтера (если не нашел - возьми анонимуса)</h3>
-<h3>Шаг 3. Отсканируй мобильным телефоном код на бейдже</h3>
+<h2 style="margin-top: 50px; display: block;">Бейдж не нашли, но волонтер регистрировался</h2>
+<h3>Шаг 1. Введи "Имя Фамилия" волонтера. Обязательно с большой буквы, как регистрировался в таблице</h3>
 
-<button type="button" class="btn btn-success">Сканировать бейдж</button>
+<h3>Шаг 2. Достань бейдж анонимуса</h3>
+<h3>Шаг 3. Отсканируй QR код на бейдже</h3>
+<h3>Шаг 4. Отпусти волонтера с миром</h3>
+
+
+<h2 style="margin-top: 50px; display: block;">Волонтер не регистрировался и бейджа нет</h2>
+
+
 
 <div id="reader">
 	

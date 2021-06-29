@@ -12,10 +12,12 @@ vol_dept_link = db.Table('vol_dept_link',
     db.Column('department_id', db.Integer, db.ForeignKey('department.id'))
 )
 
+
 vol_pres_link = db.Table('vol_pres_link', 
     db.Column('volunteer_id', db.Integer, db.ForeignKey('volunteer.id')),
     db.Column('presence_id', db.Integer, db.ForeignKey('presence.id'))
 )
+
 
 class Volunteer(db.Model):
 	id						= db.Column(db.Integer, primary_key=True)
@@ -37,7 +39,6 @@ class Volunteer(db.Model):
 	feed_type				= db.relationship('Feed_type', backref='volunteers')
 	ref_to					= db.relationship('Volunteer')
 
-
 	def __repr__(self):
 		return u"{} {} ({})".format(self.name, self.surname, self.callsign)
 
@@ -55,13 +56,13 @@ class Presence(db.Model):
 	id						= db.Column(db.Integer, primary_key=True)
 	arrival					= db.Column(db.DateTime)
 	departure				= db.Column(db.DateTime)
-	transport_type_id		= db.Column(db.Integer, db.ForeignKey('transport_type.id'), nullable=False)
+	transport_type_id		= db.Column(db.Integer, db.ForeignKey('transport_type.id'), nullable=True)
 	needToMeet				= db.Column(db.Integer, default=0)
 
 	transport_type			= db.relationship('Transport_type')
 
 	def __repr__(self):
-		return "{} - {}".format(self.departure, self.departure)
+		return "{} - {}".format(self.arrival, self.departure)
 
 
 class Transport_type(db.Model):
@@ -86,7 +87,7 @@ class Department(db.Model):
 	id						= db.Column(db.Integer, primary_key=True)
 	name					= db.Column(db.String(256))
 	is_federal				= db.Column(db.Integer, default=0)
-	lead_id 				= db.Column(db.Integer, db.ForeignKey('volunteer.id'), nullable=False)
+	lead_id 				= db.Column(db.Integer, db.ForeignKey('volunteer.id'), nullable=True)
 
 	lead					= db.relationship('Volunteer')
 

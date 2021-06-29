@@ -1,20 +1,123 @@
 #coding=utf-8
 
-from app import app, db
-from flask import render_template, url_for, redirect, session, request,  flash
-from app.models import Volunteer, Volunteer_type, Feed_type, Feed_transaction, Feed_balance, QR_Codes
+from app import app, db, gsheet
+from flask import render_template, url_for, redirect, session, request, flash
+from app.models import Volunteer, Volunteer_type, Feed_type, Feed_transaction, Feed_balance, QR_Codes, Department, Presence
 
 import datetime
 import json
 import math
 import random
 
+import hashlib
+import uuid
+
+
+def alyonka_deco(func):
+	def wrapper(*args, **kwargs):
+		try:
+			func(*args, **kwargs)
+		except:
+			print("[deco] Trying to flush connections and retry func...")
+			Volunteer.query.session.close()
+			Volunteer_type.query.session.close()
+			Feed_type.query.session.close()
+			Feed_transaction.query.session.close()
+			Feed_balance.query.session.close()
+			QR_Codes.query.session.close()
+			Department.query.session.close()
+			func(*args, **kwargs)
+
+	return wrapper
+
 
 @app.route('/')
 def index():
-	return "Hello world"
+	return "Welcome to Insomnia"
 
 
+@app.route('/import')
+def import_sheet():
+
+	to_import = gsheet.do_import()
+
+	depts = dict.fromkeys(map(lambda x: x["department"], to_import))
+	depts_db = Department.query.all()
+
+	_qrs = list(dict.fromkeys(map(lambda x: x["qr"], to_import)))
+	qrs = dict.fromkeys(map(lambda x: x.code, QR_Codes.query.filter(QR_Codes.code.in_(_qrs))))
+
+	for d in depts_db:
+		if d.name in depts:
+			depts[d.name] = d
+
+	for d in depts.keys():
+		if depts[d] == None:
+			d_db = Department()
+			d_db.name = d
+			db.session.add(d_db)
+			depts[d] = d_db
+
+	ft_free = Feed_type.query.filter(Feed_type.code == "FT1").all()[0]
+	ft_other = Feed_type.query.filter(Feed_type.code == "FT2").all()[0]
+
+	vt_ord = Volunteer_type.query.filter(Volunteer_type.code == "VT1").all()[0]
+	vt_org = Volunteer_type.query.filter(Volunteer_type.code == "VT2").all()[0]
+
+
+	for o in to_import:
+		if o["qr"] in qrs:
+			continue
+		_vol = Volunteer()
+		_vol.name = o["name"]
+		_vol.surname = o["surname"]
+		_vol.callsign = o["callsign"]
+		_vol.photo = o["photo"]
+		_vol.department.append(depts[o["department"]])
+
+		for _p in o["presence"]:
+			_pr = Presence()
+			_pr.arrival = datetime.datetime.strptime(_p["arrive"], "%Y%m%d")
+			_pr.departure = datetime.datetime.strptime(_p["dept"], "%Y%m%d")
+			db.session.add(_pr)
+			_vol.presence.append(_pr)
+
+		if o["feed_type"] == "free":
+			_vol.feed_type = ft_free
+		else:
+			_vol.feed_type = ft_other
+
+		if o["department"] == u"Организатор":
+			_vol.volunteer_type = vt_org
+		else:
+			_vol.volunteer_type = vt_ord
+
+
+		db.session.add(_vol)
+
+		_q = QR_Codes()
+		_q.code = o["qr"]
+		_q.is_valid = 1
+		_q.volunteer = _vol
+		db.session.add(_q)
+
+	db.session.commit()
+
+
+	return "All ok"
+
+
+@app.route('/qrgen/<int:qrcou>')
+def qrgen(qrcou):
+	res = []
+	for i in range(0, qrcou):
+		_uuid = uuid.uuid1()
+		_hash = hashlib.sha1(str(_uuid)).hexdigest()[:8]
+		res.append(_hash)
+	return "<br>".join(res)
+
+
+@alyonka_deco
 @app.route('/update_balance')
 def update_balance():
 
@@ -57,6 +160,7 @@ def update_balance():
 	return "Update success"
 
 
+@alyonka_deco
 @app.route('/get_vol_list')
 def get_vol_list():
 	qry = db.session.query(Volunteer, Feed_balance, QR_Codes).outerjoin(Feed_balance)\
@@ -80,6 +184,54 @@ def get_vol_list():
 	return (json.dumps(res, ensure_ascii=False)).encode('utf-8')
 
 
+@alyonka_deco
+@app.route('/activate_vol', methods=['POST'])
+def activate_vol():
+	dta = json.loads(request.data)
+	qr = dta["qr"]
+
+	_qv = QR_Codes.query.filter(QR_Codes.code == qr).all()
+	if len(_qv) > 0:
+		_qv[0].is_active = 1
+		db.session.commit()
+
+	return '{"res": "ok"}'
+
+
+@alyonka_deco
+@app.route('/link_vol_to_badge', methods=['POST'])
+def link_to_badge():
+	dta = json.loads(request.data)
+	vol_id = dta["vol_id"]
+	qr = dta["qr"]
+
+	print("qr: {}, vol_id: {}".format(qr, vol_id))
+
+	_v = Volunteer.query.get(vol_id)
+
+	_qv = QR_Codes.query.filter(QR_Codes.volunteer_id == vol_id).all()
+	for o in _qv:
+		o.is_valid = 0
+		o.is_active = 0
+
+	_q = QR_Codes.query.filter(QR_Codes.code == qr).all()
+
+	if len(_q) > 0:
+		_q[0].is_valid = 1
+		_q[0].is_active = 1
+	else:
+		_q = QR_Codes()
+		_q.is_valid = 1
+		_q.is_active = 1
+		_q.code = qr
+		_q.volunteer = _v
+		db.session.add(_q)
+	db.session.commit()
+
+	return '{"res": "ok"}'
+
+
+@alyonka_deco
 @app.route("/load_transactions", methods=['POST'])
 def load_transactions():
 
@@ -121,6 +273,10 @@ def scaffold():
 		{
 			"code": "VT1",
 			"name": "Ordinar volunteer"
+		},
+		{
+			"code": "VT2",
+			"name": "ORG"
 		}
 	]
 
