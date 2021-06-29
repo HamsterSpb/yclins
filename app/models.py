@@ -26,7 +26,7 @@ class Volunteer(db.Model):
 	callsign				= db.Column(db.String(256))
 	phone					= db.Column(db.String(256))
 	email					= db.Column(db.String(256))
-	photo					= db.Column(db.BLOB)
+	photo					= db.Column(db.String(2560))
 	short_uuid 				= db.Column(db.String(256), default=gen_short_uuid())
 	volunteer_type_id		= db.Column(db.Integer, db.ForeignKey('volunteer_type.id'), nullable=False)
 	feed_type_id			= db.Column(db.Integer, db.ForeignKey('feed_type.id'), nullable=False)
