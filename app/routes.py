@@ -86,6 +86,7 @@ def import_sheet():
 
 	ft_free = Feed_type.query.filter(Feed_type.code == "FT1").all()[0]
 	ft_other = Feed_type.query.filter(Feed_type.code == "FT2").all()[0]
+	ft_child = Feed_type.query.filter(Feed_type.code == "FT3").all()[0]
 
 	vt_ord = Volunteer_type.query.filter(Volunteer_type.code == "VT1").all()[0]
 	vt_org = Volunteer_type.query.filter(Volunteer_type.code == "VT2").all()[0]
@@ -110,6 +111,8 @@ def import_sheet():
 
 		if o["feed_type"] == "free":
 			_vol.feed_type = ft_free
+		elif o["feed_type"] == u"Ребенок":
+			_vol.feed_type = ft_child
 		else:
 			_vol.feed_type = ft_other
 
@@ -261,9 +264,13 @@ def link_to_badge():
 @app.route("/load_transactions", methods=['POST'])
 def load_transactions():
 
+	hashes = list(dict.fromkeys(map(lambda x: x.trhash, Feed_transaction.query.all())))
+
 	dta = json.loads(request.data)
 	to_upd_bal = {}
 	for entry in dta:
+		if entry["trhash"] in hashes:
+			continue
 		ft = Feed_transaction()
 		ft.volunteer_id = entry["vol_id"]
 		ft.amount = (-1)*abs(entry["amount"])

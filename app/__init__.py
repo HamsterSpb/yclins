@@ -54,6 +54,18 @@ class HomeView(AdminIndexView):
 admin = Admin(app, name=u'Админка волонтеров', template_mode='bootstrap3', index_view=HomeView(name=u"Пульт управления"))
 
 
+class QRView(ModelView):
+    column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign, 'code')
+
+
+class FBView(ModelView):
+    column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign)
+
+
+class FTView(ModelView):
+    column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign)
+
+
 class VolView(ModelView):
     column_list = ('name', 'surname', 'callsign', 'email', 'phone')
     column_searchable_list = ('name', 'surname', 'callsign', 'email', 'phone')
@@ -96,10 +108,10 @@ admin.add_view(AssessModelView(Volunteer_type, db.session, name=u"Типы во�
 admin.add_view(AssessModelView(Presence, db.session, name=u"Присутствие на полигоне", category=u'Присутствие'))
 admin.add_view(AssessModelView(Transport_type, db.session, name=u"Типы транспорта", category=u'Присутствие'))
 admin.add_view(AssessModelView(Department, db.session, name=u"Направления"))
-admin.add_view(AssessModelView(QR_Codes, db.session, name=u"QR коды"))
+admin.add_view(QRView(QR_Codes, db.session, name=u"QR коды"))
 admin.add_view(AssessModelView(Feed_type, db.session, name=u"Виды питания", category=u'Питание'))
-admin.add_view(AssessModelView(Feed_transaction, db.session, name=u"История транзакций питания", category=u'Питание'))
-admin.add_view(AssessModelView(Feed_balance, db.session, name=u"Баланс питания", category=u'Питание'))
+admin.add_view(FTView(Feed_transaction, db.session, name=u"История транзакций питания", category=u'Питание'))
+admin.add_view(FBView(Feed_balance, db.session, name=u"Баланс питания", category=u'Питание'))
 
 
 from app import routes

@@ -28,6 +28,14 @@ function onDeviceReady() {
 }
 
 
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+
 var db;
 var qr_scanner;
 
@@ -125,7 +133,8 @@ function add_feed_transaction(qrcode) {
 			t = {
 				"vol_id": o.id,
 				"dtime": Date.now(),
-				"amount": 1
+				"amount": 1,
+				"trhash": uuidv4()
 			};
 			ostt.add(t);
 		}
@@ -232,7 +241,8 @@ function getVolunteers() {
 			let _t = {
 				'vol_id': o.vol_id,
 				'amount': o.amount,
-				'timestamp': o.dtime
+				'timestamp': o.dtime,
+				'trhash': o.trhash
 			};
 			data2.push(_t);
 		});
