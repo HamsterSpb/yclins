@@ -1,7 +1,7 @@
 #coding=utf-8
 
 
-from flask import Flask, session, request
+from flask import Flask, session, request, redirect, url_for
 from config import Config
 
 from flask_sqlalchemy import SQLAlchemy
@@ -33,6 +33,15 @@ from flask_admin.model.template import EndpointLinkRowAction
 
 class HomeView(AdminIndexView):
 
+    def is_accessible(self):
+        if 'login' in session:
+            return True
+        else:
+            return False
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login', next=request.url))
+
     @expose("/")
     def index(self):
         return self.render('admin/index.html')
@@ -45,11 +54,6 @@ class HomeView(AdminIndexView):
 admin = Admin(app, name=u'Админка волонтеров', template_mode='bootstrap3', index_view=HomeView(name=u"Пульт управления"))
 
 
-
-class ImageBlob(fields.StringField):
-    pass
-
-
 class VolView(ModelView):
     column_list = ('name', 'surname', 'callsign', 'email', 'phone')
     column_searchable_list = ('name', 'surname', 'callsign', 'email', 'phone')
@@ -57,6 +61,15 @@ class VolView(ModelView):
     column_extra_row_actions = [
         EndpointLinkRowAction("glyphicon glyphicon-qrcode", ".link_qr"),
     ]
+
+    def is_accessible(self):
+        if 'login' in session:
+            return True
+        else:
+            return False
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login', next=request.url))
 
     @expose("/link_qr", methods=("GET",))
     def link_qr(self):
@@ -66,18 +79,27 @@ class VolView(ModelView):
         else:
             return self.render('admin')
 
-    #form_columns = ('blob')
+
+class AssessModelView(ModelView):
+    def is_accessible(self):
+        if 'login' in session:
+            return True
+        else:
+            return False
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login', next=request.url))
 
 
 admin.add_view(VolView(model=Volunteer, session=db.session, name=u'Волонтеры'))
-admin.add_view(ModelView(Volunteer_type, db.session, name=u"Типы волонтеров"))
-admin.add_view(ModelView(Presence, db.session, name=u"Присутствие на полигоне", category=u'Присутствие'))
-admin.add_view(ModelView(Transport_type, db.session, name=u"Типы транспорта", category=u'Присутствие'))
-admin.add_view(ModelView(Department, db.session, name=u"Направления"))
-admin.add_view(ModelView(QR_Codes, db.session, name=u"QR коды"))
-admin.add_view(ModelView(Feed_type, db.session, name=u"Виды питания", category=u'Питание'))
-admin.add_view(ModelView(Feed_transaction, db.session, name=u"История транзакций питания", category=u'Питание'))
-admin.add_view(ModelView(Feed_balance, db.session, name=u"Баланс питания", category=u'Питание'))
+admin.add_view(AssessModelView(Volunteer_type, db.session, name=u"Типы волонтеров"))
+admin.add_view(AssessModelView(Presence, db.session, name=u"Присутствие на полигоне", category=u'Присутствие'))
+admin.add_view(AssessModelView(Transport_type, db.session, name=u"Типы транспорта", category=u'Присутствие'))
+admin.add_view(AssessModelView(Department, db.session, name=u"Направления"))
+admin.add_view(AssessModelView(QR_Codes, db.session, name=u"QR коды"))
+admin.add_view(AssessModelView(Feed_type, db.session, name=u"Виды питания", category=u'Питание'))
+admin.add_view(AssessModelView(Feed_transaction, db.session, name=u"История транзакций питания", category=u'Питание'))
+admin.add_view(AssessModelView(Feed_balance, db.session, name=u"Баланс питания", category=u'Питание'))
 
 
 from app import routes

@@ -15,3 +15,7 @@ pip install enum34
 pip install uwsgi
 
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+pip install bcrypt
+pip install Image
+pip install qrcodes

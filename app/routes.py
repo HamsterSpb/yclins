@@ -1,8 +1,9 @@
 #coding=utf-8
 
 from app import app, db, gsheet
-from flask import render_template, url_for, redirect, session, request, flash
-from app.models import Volunteer, Volunteer_type, Feed_type, Feed_transaction, Feed_balance, QR_Codes, Department, Presence
+from flask import render_template, url_for, redirect, session, request, flash, redirect, send_from_directory
+from app.models import Volunteer, Volunteer_type, Feed_type, Feed_transaction, Feed_balance, QR_Codes, Department, Presence, User
+from sqlalchemy import and_
 
 import datetime
 import json
@@ -11,6 +12,7 @@ import random
 
 import hashlib
 import uuid
+import bcrypt
 
 
 def alyonka_deco(func):
@@ -33,7 +35,31 @@ def alyonka_deco(func):
 
 @app.route('/')
 def index():
-	return "Welcome to Insomnia"
+	if 'login' not in session:
+		return redirect('/login')
+	else:
+		return redirect('/admin')
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+	if request.method == "POST":
+		login = request.form["user"]
+		password = request.form["pwd"]
+		_v = User.query.filter(and_(
+			User.login == login
+		)).first()
+		if _v is not None:
+			if bcrypt.checkpw(password.encode('utf-8'), _v.password_hash.encode('utf-8')):
+				session['login'] = login
+				session["userid"] = _v.id
+				return redirect('/')
+	return render_template("login.html")
+
+
+@app.route('/qr/<path:path>')
+def send_qr(path):
+	return send_from_directory('../qrs', path)
 
 
 @app.route('/import')

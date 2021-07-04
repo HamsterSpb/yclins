@@ -1,6 +1,7 @@
 from app import db
 import datetime
 import random
+import bcrypt
 
 
 def gen_short_uuid():
@@ -17,6 +18,21 @@ vol_pres_link = db.Table('vol_pres_link',
     db.Column('volunteer_id', db.Integer, db.ForeignKey('volunteer.id')),
     db.Column('presence_id', db.Integer, db.ForeignKey('presence.id'))
 )
+
+
+class User(db.Model):
+	id						= db.Column(db.Integer, primary_key=True)
+	login					= db.Column(db.String(256))
+	password_hash			= db.Column(db.String(256))
+
+
+	@property
+	def password(self):
+		raise AttributeError('password not readable')
+
+	@password.setter
+	def password(self, password):
+		self.password_hash = bcrypt.hashpw(password, bcrypt.gensalt())
 
 
 class Volunteer(db.Model):
