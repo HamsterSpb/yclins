@@ -13,7 +13,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1EpcPXa36PGsxdHxGAVDEdxe5jBep5g3WjErDy64Cc2k'
-SAMPLE_RANGE_NAME = u"'ForImport_values'!A2:P3000"
+SAMPLE_RANGE_NAME = u"'FIV'!A2:P3000"
 
 def do_import():
 	creds = None
@@ -47,41 +47,6 @@ def do_import():
 								range=SAMPLE_RANGE_NAME).execute()
 	values = result.get('values', [])
 
-	ranges = [
-		{
-			"arrive": "20210620",
-			"dept": "20210626"
-		},
-		{
-			"arrive": "20210627",
-			"dept": "20210703"
-		},
-		{
-			"arrive": "20210704",
-			"dept": "20210710"
-		},
-		{
-			"arrive": "20210711",
-			"dept": "20210714"
-		},
-		{
-			"arrive": "20210715",
-			"dept": "20210719"
-		},
-		{
-			"arrive": "20210720",
-			"dept": "20210725"
-		},
-		{
-			"arrive": "20210726",
-			"dept": "20210730"
-		},
-			{
-			"arrive": "20210731",
-			"dept": "20210801"
-		}
-	]
-
 	res = []
 
 	if not values:
@@ -93,39 +58,14 @@ def do_import():
 			if row[0] == "#END#":
 				break
 
-			presences = []
-			_cur_cont = []
-			_prev_r = -1
-			#print(row[0])
-			for i in range(7, 15):
-				if row[i] == "1":
-					_cur_range = ranges[(i-7)]
-					if _prev_r == -1:
-						_prev_r = i
-					if i - _prev_r <= 1:
-						_cur_cont.append(_cur_range)
-					else:
-						presences.append({
-							"arrive": _cur_cont[0]["arrive"],
-							"dept": _cur_cont[-1]["dept"]
-							})
-						_cur_cont = []
-						_cur_cont.append(_cur_range)
-					_prev_r = i
-			if len(_cur_cont) > 0:
-				presences.append({
-					"arrive": _cur_cont[0]["arrive"],
-					"dept": _cur_cont[-1]["dept"]
-					})
-				
 			cur_vol = {
 				"name": row[1],
 				"surname": row[2],
-				"callsign": row[3],
-				"feed_type": row[4],
-				"photo": row[5],
-				"department": row[6],
-				"qr": row[15],
+				"callsign": row[11],
+				"feed_type": row[3],
+				"photo": row[4],
+				"department": row[5],
+				"qr": row[6],
 				"presence": presences
 			}
 

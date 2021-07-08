@@ -102,13 +102,6 @@ def import_sheet():
 		_vol.photo = o["photo"]
 		_vol.department.append(depts[o["department"]])
 
-		for _p in o["presence"]:
-			_pr = Presence()
-			_pr.arrival = datetime.datetime.strptime(_p["arrive"], "%Y%m%d")
-			_pr.departure = datetime.datetime.strptime(_p["dept"], "%Y%m%d")
-			db.session.add(_pr)
-			_vol.presence.append(_pr)
-
 		if o["feed_type"] == "free":
 			_vol.feed_type = ft_free
 		elif o["feed_type"] == u"Ребенок":

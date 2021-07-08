@@ -45,7 +45,7 @@ with open('./photos.csv', 'r') as f:
 		qr = r[1]
 		res = re.split("\/d\/(.*)\/view", r[0])
 		if len(res) <= 1:
-			print(l)
+			print(r[0])
 		else:
 			download_file_from_google_drive(res[1], "./phs/{}.png".format(qr))
 
