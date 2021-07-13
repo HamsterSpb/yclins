@@ -109,12 +109,11 @@ function hide_modal() {
 function scan_qr() {
 	$(".app").hide();
 	qr_scanner.scan( (err, cont) => {
-		if(!err) {
 			console.log(cont);
 			qr_scanner.hide();
 			$(".app").show();
-			$("body").css('background-color', 'white')
-		}
+			$("body").css('background-color', 'white');
+			feed_volunteer(cont);
 	} );
 	qr_scanner.show( (sts) => {
 		console.log(sts);
@@ -174,6 +173,16 @@ function feed_volunteer(qrcode) {
 			}, 4000);
 		} else {
 			$('.feed').css('background-color', 'red');
+			let _msg = "";
+			if(o.is_valid != 1) {
+				msg += "Бейдж помечен невалидным";
+			}
+			if(o.is_valid != 1) {
+				msg += "Бейдж не активирован в штабе";
+			}
+			if(msg != "") {
+				$('.feed_whynot').html(msg);
+			}
 			$('.feed_decision').show();
 		}
 		$('.feed_name').html(o.name + " " + o.surname + " (" + o.callsign + ")");

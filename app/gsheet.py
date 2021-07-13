@@ -13,7 +13,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1EpcPXa36PGsxdHxGAVDEdxe5jBep5g3WjErDy64Cc2k'
-SAMPLE_RANGE_NAME = u"'FIV'!A2:P3000"
+SAMPLE_RANGE_NAME = u"'FIV'!A2:L3000"
 
 def do_import():
 	creds = None
@@ -53,8 +53,6 @@ def do_import():
 		print('No data found.')
 	else:
 		for row in values:
-			if row[0] == '-':
-				continue
 			if row[0] == "#END#":
 				break
 
@@ -65,8 +63,7 @@ def do_import():
 				"feed_type": row[3],
 				"photo": row[4],
 				"department": row[5],
-				"qr": row[6],
-				"presence": presences
+				"qr": row[6]
 			}
 
 			res.append(cur_vol)

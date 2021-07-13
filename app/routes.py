@@ -95,6 +95,7 @@ def import_sheet():
 	for o in to_import:
 		if o["qr"] in qrs:
 			continue
+		print(o["qr"])
 		_vol = Volunteer()
 		_vol.name = o["name"]
 		_vol.surname = o["surname"]
@@ -186,9 +187,7 @@ def update_balance():
 @app.route('/get_vol_list')
 def get_vol_list():
 	qry = db.session.query(Volunteer, Feed_balance, QR_Codes).outerjoin(Feed_balance)\
-		.outerjoin(QR_Codes)\
-		.filter(QR_Codes.is_active == 1)\
-		.filter(QR_Codes.is_valid == 1).all()
+		.outerjoin(QR_Codes).all()
 	res = []
 	for o in qry:
 		vol = o[0]
@@ -200,7 +199,9 @@ def get_vol_list():
 			u"surname": vol.surname,
 			u"callsign": vol.callsign,
 			u"qr": qr.code,
-			u"balance": 0 if fb is None else fb.balance
+			u"balance": 0 if fb is None else fb.balance,
+			u"is_active": vol.is_active,
+			u"is_valid": vol.is_valid
 			})
 
 	return (json.dumps(res, ensure_ascii=False)).encode('utf-8')
