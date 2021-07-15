@@ -10,6 +10,7 @@ from flask_admin.contrib.sqla import ModelView
 
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.actions import action
 
 from wtforms import fields
 from wtforms.widgets import FileInput
@@ -56,6 +57,14 @@ admin = Admin(app, name=u'Админка волонтеров', template_mode='b
 
 class QRView(ModelView):
     column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign, 'code')
+    page_size = 500
+    @action('activate', 'Activate', u'Активировать коды')
+    def batch_activate(self, ids):
+        qrs = QR_Codes.query.filter(QR_Codes.id.in_(ids)).all()
+        for q in qrs:
+            q.is_active = True
+        db.session.commit()
+
 
 
 class FBView(ModelView):
@@ -69,6 +78,7 @@ class FTView(ModelView):
 class VolView(ModelView):
     column_list = ('name', 'surname', 'callsign', 'email', 'phone')
     column_searchable_list = ('name', 'surname', 'callsign', 'email', 'phone')
+    page_size = 500
 
     column_extra_row_actions = [
         EndpointLinkRowAction("glyphicon glyphicon-qrcode", ".link_qr"),

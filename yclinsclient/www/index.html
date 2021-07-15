@@ -34,7 +34,7 @@
             <div class="container">
                 <div class="d-grid gap-2">
                     <button type="button" class="btn btn-primary btn-lg" onclick="scan_qr()">Кормить</button>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="getVolunteers()">Загрузить список</button>
+                    <button type="button" class="btn btn-primary btn-lg" onclick="getVolunteers()">Синхронизировать с БД</button>
                 </div>
             </div>
         </div>
@@ -53,6 +53,10 @@
             </div>
         </div>
 
+        <div class="trobber">
+            <img class="img-trob" src="img/trob.gif">
+        </div>
+
         <!-- Modal -->
         <div class="modal fade" id="infomessages">
           <div class="modal-dialog">
@@ -61,7 +65,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">DB Info</h5>
               </div>
               <div class="modal-body">
-                Volunteers list has been updated.
+                Синхронизация с базой выполнена
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="hide_modal()">Close</button>

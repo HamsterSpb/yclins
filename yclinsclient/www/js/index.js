@@ -142,13 +142,21 @@ function add_feed_transaction(qrcode) {
 
 
 function feed_volunteer(qrcode) {
+	$('.trobber').css('display', 'block');
 	var ost = db.transaction(["volunteers"], 'readwrite').objectStore('volunteers');
 	var ind = ost.index("qrCode");
+
+	ost.onerror = (ev) => {
+		$('.trobber').css('display', 'none');
+	}
+
 	ind.get(qrcode).onsuccess = (e) => {
+		$('.trobber').css('display', 'none');
+		$('.feed_decision').css('display', 'none');
 		let showGreen = false;
 		let o = e.target.result;
 		if(o !== undefined) {
-			if(o.balance > 0) {
+			if(o.balance > 0 && o.is_valid == 1 && o.is_active == 1) {
 				showGreen = true;
 			};
 			$('.feed').attr('qr', o.qr);
@@ -170,18 +178,18 @@ function feed_volunteer(qrcode) {
 			add_feed_transaction(qrcode);
 			setTimeout(() => {
 				$('.feed').css('display', 'none');
-			}, 4000);
+			}, 2000);
 		} else {
 			$('.feed').css('background-color', 'red');
 			let _msg = "";
 			if(o.is_valid != 1) {
-				msg += "Бейдж помечен невалидным";
+				_msg += "Бейдж помечен невалидным<br>";
 			}
-			if(o.is_valid != 1) {
-				msg += "Бейдж не активирован в штабе";
+			if(o.is_active != 1) {
+				_msg += "Бейдж не активирован в штабе";
 			}
-			if(msg != "") {
-				$('.feed_whynot').html(msg);
+			if(_msg != "") {
+				$('.feed_whynot').html(_msg);
 			}
 			$('.feed_decision').show();
 		}
@@ -215,6 +223,13 @@ function force_nofeed() {
 }
 
 
+
+function addVolToDb(o) {
+	var tr = db.transaction(["volunteers"], "readwrite");
+	tr.objectStore('volunteers').put(o);
+}
+
+
 function getOnlyVols() {
 	var apiUrl = 'https://yclins.hamsterspb.xyz/get_vol_list';
 	$.ajax({
@@ -225,13 +240,14 @@ function getOnlyVols() {
 	    success: function(result) {
 	        var result = $.parseJSON(result);
 	        var tr = db.transaction(["volunteers"], "readwrite");
-	        var ost = tr.objectStore('volunteers');
-	        ost.clear();
-	        result.forEach((i) => {
-	        	ost.add(i);
-	        });
-	        console.log("DB updated");
-	        show_modal();
+					tr.objectStore('volunteers').clear();
+					tr.oncomplete = (ev) => {
+		        result.forEach((i) => {
+		        	addVolToDb(i);
+		        });
+						console.log("DB updated");
+	       		show_modal();
+					};
 	    }
 	});	
 }

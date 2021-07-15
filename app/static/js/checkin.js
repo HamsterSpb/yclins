@@ -1,5 +1,5 @@
 const html5QrCode = new Html5Qrcode("reader");
-const config = { fps: 20, qrbox: 200 };
+const config = { fps: 20 };
 
 const link_vol = message => {
 	html5QrCode.stop();
@@ -38,9 +38,16 @@ const activate_vol = message => {
 		url: '/activate_vol',
 		crossDomain: true,
 		data: JSON.stringify(data2),
+		dataType: "json",
 		contentType: "application/json; charset=utf-8",
 		success: (ev) => {
-			$('#fst_qr').html("Прочитан код: "+message);
+			console.log(ev.res);
+			if(ev.res == "ok"){
+				$('#fst_qr').html("Прочитан код: "+message+"<br>Бейдж для "+ev.name+" активирован.");
+			} else {
+				$('#fst_qr').html("Прочитан код: "+message+"<br>Произошла ошибка, бейдж не активирован!!!");
+			}
+			
 		},
 		failure: (ev) => {
         	$('#fst_qr').html("Ошибка: "+ev);

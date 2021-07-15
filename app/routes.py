@@ -200,8 +200,8 @@ def get_vol_list():
 			u"callsign": vol.callsign,
 			u"qr": qr.code,
 			u"balance": 0 if fb is None else fb.balance,
-			u"is_active": vol.is_active,
-			u"is_valid": vol.is_valid
+			u"is_active": qr.is_active,
+			u"is_valid": qr.is_valid
 			})
 
 	return (json.dumps(res, ensure_ascii=False)).encode('utf-8')
@@ -217,8 +217,9 @@ def activate_vol():
 	if len(_qv) > 0:
 		_qv[0].is_active = 1
 		db.session.commit()
-
-	return '{"res": "ok"}'
+		return u'{{"res": "ok", "name": "{}"}}'.format(_qv[0].volunteer.name)
+	
+	return u'{"res": "error"}'
 
 
 @alyonka_deco

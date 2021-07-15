@@ -125,6 +125,23 @@ h1 {
     display:none;
 }
 
+
+.trobber {
+    display: none;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+}
+
+.img-trob {
+    position: absolute;
+    top: 45%;
+    left: 35%;
+    width: 100px;
+    display: block;
+}
+
 #deviceready.ready .event.listening { display: none; }
 #deviceready.ready .event.received { display: block; }
 
