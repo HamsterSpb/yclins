@@ -140,9 +140,52 @@ function add_feed_transaction(qrcode) {
 	}
 }
 
+function show_vol_info(o) {
+	$('.feed_name').html(o.name + " " + o.surname + " (" + o.callsign + ")");
+}
+
+function show_error(o, msg) {
+	$('.feed_decision').css('display', 'block');
+	$('.feed').css('background-color', 'red');
+	$('.feed_left').html("");
+	show_vol_info(o);
+	if(_msg != "") {
+		$('.feed_whynot').html(_msg);
+	}
+}
+
+function show_green(o) {
+	$('.feed_decision').css('display', 'none');
+	$('.feed').css('background-color', 'green');
+	show_vol_info(o);
+	$('.feed_left').html("Осталось " + (o.balance - 1) + " доступных приемов пищи");
+}
+
+function show_red(o) {
+	$('.feed_decision').css('display', 'block');
+	$('.feed').css('background-color', 'red');
+	$('.feed_left').html("Перерасход приемов пищи:" + o.balance);
+	show_vol_info(o);
+}
+
+function show_50p(o) {
+	$('.feed_decision').css('display', 'none');
+	$('.feed_50p').css('display', 'block');
+	$('.feed').css('background-color', 'orange');
+	show_vol_info(o);
+}
+
+function show_100p(o) {
+	$('.feed_decision').css('display', 'none');
+	$('.feed_50p').css('display', 'block');
+	$('.feed').css('background-color', 'blue');
+	show_vol_info(o);
+}
+
 
 function feed_volunteer(qrcode) {
 	$('.trobber').css('display', 'block');
+
 	var ost = db.transaction(["volunteers"], 'readwrite').objectStore('volunteers');
 	var ind = ost.index("qrCode");
 
@@ -152,49 +195,54 @@ function feed_volunteer(qrcode) {
 
 	ind.get(qrcode).onsuccess = (e) => {
 		$('.trobber').css('display', 'none');
-		$('.feed_decision').css('display', 'none');
-		let showGreen = false;
+		$('.feed').css('display', 'flex');
+
 		let o = e.target.result;
-		if(o !== undefined) {
-			if(o.balance > 0 && o.is_valid == 1 && o.is_active == 1) {
-				showGreen = true;
-			};
-			$('.feed').attr('qr', o.qr);
-		} else {
+
+		$('.feed').attr('qr', o.qr);
+
+		if(o == undefined) {
 			o = {
-				"name": "Anonymous",
+				"name": "Бейдж не найден в списке",
 				"surname": "",
 				"callsign": "",
 				"balance": 0,
 				"qr": qrcode
-			};
-			$('.feed').attr('qr','-1');
+			};			
 		}
-		$('.feed').css('display', 'flex');
-		if(showGreen) {
-			$('.feed').css('background-color', 'green');
-			o.balance -= 1;
-			ost.put(o);
-			add_feed_transaction(qrcode);
-			setTimeout(() => {
-				$('.feed').css('display', 'none');
-			}, 2000);
-		} else {
-			$('.feed').css('background-color', 'red');
+
+		// FT1 - eat while work
+		// FT2 - fixed balance
+		// FT3 - child
+		// FT4 - 50%
+		// FT5 - 100%
+
+		if(o.is_valid != 1 || o.is_active != 1) {
 			let _msg = "";
 			if(o.is_valid != 1) {
-				_msg += "Бейдж помечен невалидным<br>";
+				_msg += "Бейдж заблокирован<br>";
 			}
 			if(o.is_active != 1) {
 				_msg += "Бейдж не активирован в штабе";
 			}
-			if(_msg != "") {
-				$('.feed_whynot').html(_msg);
-			}
-			$('.feed_decision').show();
+			show_error(o, _msg);
 		}
-		$('.feed_name').html(o.name + " " + o.surname + " (" + o.callsign + ")");
-		$('.feed_left').html("Осталось питания: " + (o.balance));
+
+		if(o.feed_type == "FT1" || o.feed_type == "FT2" || o.feed_type == "FT3") {
+			if(o.balance > 0) {
+				show_green(o);
+			} else {
+				show_red(o);
+			}
+		}
+
+		if(o.feed_type == "FT4") {
+			show_50p(o);
+		}
+
+		if(o.feed_type == "FT5") {
+			show_100p(o);
+		}
 	}
 }
 
@@ -217,9 +265,9 @@ function force_feed() {
 	}	
 }
 
-function force_nofeed() {
+function feed_dialog_close() {
 	$('.feed').css('display', 'none');
-	$('.feed_decision').hide();	
+	$('.feed_decision').hide();
 }
 
 

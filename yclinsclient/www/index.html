@@ -34,7 +34,7 @@
             <div class="container">
                 <div class="d-grid gap-2">
                     <button type="button" class="btn btn-primary btn-lg" onclick="scan_qr()">Кормить</button>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="getVolunteers()">Синхронизировать с БД</button>
+                    <button type="button" class="btn btn-primary btn-lg" onclick="getVolunteers()">Обновить список на питание</button>
                 </div>
             </div>
         </div>
@@ -44,12 +44,20 @@
 
         <!-- Feed -->
         <div class="feed">
-            <div class="feed_name feed_block">Мария Манькова (Маняша)</div>
-            <div class="feed_left feed_block">осталось 3 питания</div>
+            <div class="feed_name feed_block"></div>
+            <div class="feed_left feed_block"></div>
             <div class="feed_whynot feed_block"></div>
-            <div class="feed_decision d-grid gap-2">
+            <div class="feed_ok">
+                <button type="button" class="btn btn-primary btn-lg" onclick="force_feed()">Кормить</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="feed_dialog_close()">Закрыть</button>
+            </div>
+            <div class="feed_decision">
                 <button type="button" class="btn btn-primary btn-lg" onclick="force_feed()">Все равно кормить</button>
-                <button type="button" class="btn btn-primary btn-lg" onclick="force_nofeed()">Не кормить</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="feed_dialog_close()">Не кормить</button>
+            </div>
+            <div class="feed_50p">
+                <button type="button" class="btn btn-primary btn-lg" onclick="force_feed()">Накормить</button>
+                <button type="button" class="btn btn-primary btn-lg" onclick="feed_dialog_close()">Отмена</button>
             </div>
         </div>
 
@@ -62,13 +70,13 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">DB Info</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Инфо</h5>
               </div>
               <div class="modal-body">
-                Синхронизация с базой выполнена
+                Список на питание обновлен
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="hide_modal()">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="hide_modal()">Закрыть</button>
               </div>
             </div>
           </div>

@@ -193,6 +193,8 @@ def get_vol_list():
 		vol = o[0]
 		fb = o[1]
 		qr = o[2]
+		if qr is None:
+			continue
 		res.append({
 			u"id": vol.id,
 			u"name": vol.name,
@@ -201,8 +203,9 @@ def get_vol_list():
 			u"qr": qr.code,
 			u"balance": 0 if fb is None else fb.balance,
 			u"is_active": qr.is_active,
-			u"is_valid": qr.is_valid
-			})
+			u"is_valid": qr.is_valid,
+			u"feed_type": vol.feed_type.code
+			});
 
 	return (json.dumps(res, ensure_ascii=False)).encode('utf-8')
 
@@ -261,6 +264,7 @@ def link_to_badge():
 	if len(_q) > 0:
 		_q[0].is_valid = 1
 		_q[0].is_active = 1
+		_q[0].volunteer = _v
 	else:
 		_q = QR_Codes()
 		_q.is_valid = 1

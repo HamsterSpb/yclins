@@ -72,7 +72,7 @@ body {
     text-align: center;
 }
 
-.feed_decision {
+.feed_decision, .feed_ok, .feed_50p {
     display: none;
 }
 
