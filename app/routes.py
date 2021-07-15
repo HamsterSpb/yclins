@@ -1,7 +1,7 @@
 #coding=utf-8
 
 from app import app, db, gsheet
-from flask import render_template, url_for, redirect, session, request, flash, redirect, send_from_directory
+from flask import render_template, url_for, redirect, session, request, flash, send_from_directory
 from app.models import Volunteer, Volunteer_type, Feed_type, Feed_transaction, Feed_balance, QR_Codes, Department, Presence, User
 from sqlalchemy import and_
 
@@ -220,6 +220,24 @@ def activate_vol():
 		return u'{{"res": "ok", "name": "{}"}}'.format(_qv[0].volunteer.name)
 	
 	return u'{"res": "error"}'
+
+
+@app.route('/open_by_qr/<string:qr>')
+def open_by_qr(qr):
+	q = QR_Codes.query.filter(QR_Codes.code == qr).all()
+	if len(q) > 0:
+		return redirect('/admin/volunteer/edit/?url=%2Fadmin%2Fvolunteer%2F&id={}'.format(q[0].volunteer.id))
+	else:
+		return redirect('admin/volunteer/')
+
+
+@app.route('/open_qr/<string:qr>')
+def open_qr(qr):
+	q = QR_Codes.query.filter(QR_Codes.code == qr).all()
+	if len(q) > 0:
+		return redirect('/admin/qr_codes/edit/?url=%2Fadmin%2Fqr_codes%2F&id={}'.format(q[0].id))
+	else:
+		return redirect('admin/qr_codes/')
 
 
 @alyonka_deco
