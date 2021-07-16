@@ -62,7 +62,7 @@ class QRView(ModelView):
     def batch_activate(self, ids):
         qrs = QR_Codes.query.filter(QR_Codes.id.in_(ids)).all()
         for q in qrs:
-            q.is_active = True
+            q.is_active = 1
         db.session.commit()
 
 
