@@ -58,13 +58,12 @@ admin = Admin(app, name=u'Админка волонтеров', template_mode='b
 class QRView(ModelView):
     column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign, 'volunteer.department.name', 'code')
     page_size = 500
-    @action('activate', 'Activate', u'Активировать коды')
+    @action('activate', u'Активировать', u'Активировать коды')
     def batch_activate(self, ids):
         qrs = QR_Codes.query.filter(QR_Codes.id.in_(ids)).all()
         for q in qrs:
             q.is_active = 1
         db.session.commit()
-
 
 
 class FBView(ModelView):
@@ -73,6 +72,14 @@ class FBView(ModelView):
 
 class FTView(ModelView):
     column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign)
+
+
+def set_feed_type(ids, ft_code):
+    vols = Volunteer.query.filter(Volunteer.id.in_(ids)).all()
+    ft = Feed_type.query.filter(Feed_type.code == ft_code).all()[0]
+    for v in vols:
+        v.feed_type = ft
+    db.session.commit()
 
 
 class VolView(ModelView):
@@ -84,6 +91,18 @@ class VolView(ModelView):
     column_extra_row_actions = [
         EndpointLinkRowAction("glyphicon glyphicon-qrcode", ".link_qr"),
     ]
+
+    @action('fbfree', u'FREE', u'Установить бесплатный тип?')
+    def batch_set_free(self, ids):
+        set_feed_type(ids, "FT1")
+
+    @action('fb100p', u'100p', u'Установить тип за 100?')
+    def batch_set_100p(self, ids):
+        set_feed_type(ids, "FT5")
+
+    @action('fb50p', u'50p', u'Установить тип за 50?')
+    def batch_set_50p(self, ids):
+        set_feed_type(ids, "FT4")
 
     def is_accessible(self):
         if 'login' in session:
