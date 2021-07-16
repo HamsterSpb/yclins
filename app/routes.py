@@ -187,7 +187,8 @@ def update_balance():
 @app.route('/get_vol_list')
 def get_vol_list():
 	qry = db.session.query(Volunteer, Feed_balance, QR_Codes).outerjoin(Feed_balance)\
-		.outerjoin(QR_Codes).all()
+		.outerjoin(QR_Codes)\
+		.filter(QR_Codes.is_valid == 1).all()
 	res = []
 	for o in qry:
 		vol = o[0]
@@ -232,6 +233,23 @@ def open_by_qr(qr):
 		return redirect('/admin/volunteer/edit/?url=%2Fadmin%2Fvolunteer%2F&id={}'.format(q[0].volunteer.id))
 	else:
 		return redirect('admin/volunteer/')
+
+
+@app.route('/open_fb/<string:qr>')
+def open_fb(qr):
+	q = QR_Codes.query.filter(QR_Codes.code == qr).all()
+	if len(q) > 0:
+		q2 = Feed_balance.query.filter(Feed_balance.volunteer == q[0].volunteer).all()
+		if len(q2) > 0:
+			return redirect('/admin/feed_balance/edit/?url=%2Fadmin%2Ffeed_balance%2F&id={}'.format(q2[0].id))
+		else:
+			fb = Feed_balance()
+			fb.volunteer = q[0].volunteer
+			fb.balance = 0
+			db.session.add(fb)
+			db.session.commit()
+			return redirect('/admin/feed_balance/edit/?url=%2Fadmin%2Ffeed_balance%2F&id={}'.format(fb.id))
+	return redirect('admin/volunteer/')
 
 
 @app.route('/open_qr/<string:qr>')

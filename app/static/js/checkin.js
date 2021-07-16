@@ -114,4 +114,20 @@ function open_qr_by_QR() {
 }
 
 
+function open_feedb_by_QR() {
+	Html5Qrcode.getCameras().then(devices => {
+	  if (devices && devices.length) {
+	    var cameraId = devices[0].id;
+		$('#reader').css("display", "block");
+		$('#fst_qr').html("");
+		html5QrCode.start(cameraId, config, (msg) => {
+			html5QrCode.stop();
+			$('#reader').css("display", "none");
+			window.location.replace('/open_fb/'+msg);
+		});
+	  }
+	}).catch(err => {
+	  console.log(err);
+	});	
+}
 

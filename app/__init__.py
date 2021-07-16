@@ -56,7 +56,7 @@ admin = Admin(app, name=u'Админка волонтеров', template_mode='b
 
 
 class QRView(ModelView):
-    column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign, 'code')
+    column_searchable_list = (Volunteer.name, Volunteer.surname, Volunteer.callsign, 'volunteer.department.name', 'code')
     page_size = 500
     @action('activate', 'Activate', u'Активировать коды')
     def batch_activate(self, ids):
@@ -76,8 +76,9 @@ class FTView(ModelView):
 
 
 class VolView(ModelView):
-    column_list = ('name', 'surname', 'callsign', 'email', 'phone')
-    column_searchable_list = ('name', 'surname', 'callsign', 'email', 'phone')
+    column_hide_backrefs = False
+    column_list = ('name', 'surname', 'callsign', 'department', 'email', 'phone')
+    column_searchable_list = ('name', 'surname', 'callsign', 'email', 'phone', 'department.name')
     page_size = 500
 
     column_extra_row_actions = [

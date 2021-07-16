@@ -48,7 +48,6 @@ body {
                                    /* offset horizontal: half of text area width */
 }
 
-
 .feed {
     display: none;
     position: absolute;
@@ -63,19 +62,29 @@ body {
     justify-content: stretch;
 }
 
+
 .feed_name, .feed_left {
     font-size: 30px;
 }
 
+
 .feed_block {
-    margin: 50px 0;
+    margin: 50px 0px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
 }
+
 
 .feed_decision, .feed_ok, .feed_50p {
     display: none;
 }
 
+.btn-feed {
+    margin: 5px 0px;
+}
 
 .prj {
     position:absolute;

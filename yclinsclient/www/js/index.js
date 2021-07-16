@@ -149,35 +149,46 @@ function show_error(o, msg) {
 	$('.feed').css('background-color', 'red');
 	$('.feed_left').html("");
 	show_vol_info(o);
-	if(_msg != "") {
-		$('.feed_whynot').html(_msg);
+	if(msg != "") {
+		$('.feed_whynot').html(msg);
 	}
 }
 
 function show_green(o) {
 	$('.feed_decision').css('display', 'none');
+	$('.feed_ok').css('display', 'flex');
+	$('.feed_50p').css('display', 'none');
+	$('.feed_whynot').css('display', 'none');
 	$('.feed').css('background-color', 'green');
 	show_vol_info(o);
 	$('.feed_left').html("Осталось " + (o.balance - 1) + " доступных приемов пищи");
+	$('.feed_ok').css('display', 'flex');
 }
 
 function show_red(o) {
-	$('.feed_decision').css('display', 'block');
+	$('.feed_decision').css('display', 'flex');
+	$('.feed_ok').css('display', 'none');
+	$('.feed_50p').css('display', 'none');
+	$('.feed_whynot').css('display', 'none');
 	$('.feed').css('background-color', 'red');
-	$('.feed_left').html("Перерасход приемов пищи:" + o.balance);
+	$('.feed_left').html("Перерасход приемов пищи:" + ((o.balance - 1) * -1));
 	show_vol_info(o);
 }
 
 function show_50p(o) {
 	$('.feed_decision').css('display', 'none');
-	$('.feed_50p').css('display', 'block');
+	$('.feed_ok').css('display', 'none');
+	$('.feed_whynot').css('display', 'none');
+	$('.feed_50p').css('display', 'flex');
 	$('.feed').css('background-color', 'orange');
 	show_vol_info(o);
 }
 
 function show_100p(o) {
 	$('.feed_decision').css('display', 'none');
-	$('.feed_50p').css('display', 'block');
+	$('.feed_ok').css('display', 'none');
+	$('.feed_whynot').css('display', 'none');
+	$('.feed_50p').css('display', 'flex');
 	$('.feed').css('background-color', 'blue');
 	show_vol_info(o);
 }
@@ -199,17 +210,19 @@ function feed_volunteer(qrcode) {
 
 		let o = e.target.result;
 
-		$('.feed').attr('qr', o.qr);
-
 		if(o == undefined) {
 			o = {
 				"name": "Бейдж не найден в списке",
 				"surname": "",
 				"callsign": "",
 				"balance": 0,
+				"is_valid": 0,
+				"is_active": 0,
 				"qr": qrcode
 			};			
 		}
+
+		$('.feed').attr('qr', o.qr);
 
 		// FT1 - eat while work
 		// FT2 - fixed balance
@@ -226,6 +239,7 @@ function feed_volunteer(qrcode) {
 				_msg += "Бейдж не активирован в штабе";
 			}
 			show_error(o, _msg);
+			return;
 		}
 
 		if(o.feed_type == "FT1" || o.feed_type == "FT2" || o.feed_type == "FT3") {
@@ -234,14 +248,17 @@ function feed_volunteer(qrcode) {
 			} else {
 				show_red(o);
 			}
+			return;
 		}
 
 		if(o.feed_type == "FT4") {
 			show_50p(o);
+			return;
 		}
 
 		if(o.feed_type == "FT5") {
 			show_100p(o);
+			return;
 		}
 	}
 }
