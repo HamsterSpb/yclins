@@ -84,7 +84,7 @@ def set_feed_type(ids, ft_code):
 
 class VolView(ModelView):
     column_hide_backrefs = False
-    column_list = ('name', 'surname', 'callsign', 'department', 'email', 'phone')
+    column_list = ('name', 'surname', 'callsign', 'department', 'email', 'phone', 'feed_type')
     column_searchable_list = ('name', 'surname', 'callsign', 'email', 'phone', 'department.name')
     page_size = 500
 
